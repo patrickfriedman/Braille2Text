@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity
         if (OpenCVLoader.initDebug())
         {
             Log.d(TAG, "OpenCV is Configured or Connected Successfully.");
+            Log.d(TAG, "Testing Git");
         }
         else
         {
