@@ -16,9 +16,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(OpenCVLoader.initDebug()){
-            Toast.makeText(this, "openCv successfully loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "OpenCV successfully loaded!", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(this, "openCv cannot be loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "OpenCV cannot be loaded.", Toast.LENGTH_SHORT).show();
         }
 
     }
