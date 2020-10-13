@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity
         if(OpenCVLoader.initDebug()){
             Toast.makeText(this, "OpenCV successfully loaded!", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(this, "OpenCV cannot be loaded.test", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "OpenCV cannot be loaded", Toast.LENGTH_SHORT).show();
         }
 
     }
