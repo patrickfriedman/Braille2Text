@@ -8,6 +8,8 @@ import android.content.Intent
 import android.view.View
 import android.widget.Button
 import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private var button: Button? = null
@@ -15,7 +17,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //txtPythonShow.text=getPythonHelloWorld()                      //heres the issue
+
+        txtPythonShow.text=getPythonHelloWorld()                      //this prints out the python function helloworld.py
 
         if (OpenCVLoader.initDebug()) {
             Toast.makeText(this, "OpenCV successfully loaded!", Toast.LENGTH_SHORT).show()
@@ -26,10 +29,12 @@ class MainActivity : AppCompatActivity() {
         button!!.setOnClickListener { openCameraActivity() }
     }
 
+
+
     private fun getPythonHelloWorld(): String {
         val python = Python.getInstance()
         val pythonFile = python.getModule("test")
-        return pythonFile.callAttr("test").toString()
+        return pythonFile.callAttr("helloworld").toString()
     }
 
     private fun openCameraActivity() {
