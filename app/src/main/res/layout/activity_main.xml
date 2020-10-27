@@ -10,7 +10,10 @@
         android:id="@+id/txtPythonShow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="212dp"
+        android:text="Main Page"
         android:textColor="#F44336"
         android:textSize="30sp" />
 
