@@ -1,3 +1,0 @@
-include ':app'
-rootProject.name = "Braille2Text"
-include ':openCVLibrary343'
