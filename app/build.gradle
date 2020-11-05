@@ -14,6 +14,21 @@ android {
         versionCode 1
         versionName "1.0"
 
+        python{
+            pip{
+                instll "four_point_transform"
+                install "Counter"
+                install "matplotlib.pyplot"
+                install "contours"
+                install "skimage"
+                install "numpy"
+                istall "imutils"
+                install "cv2"
+                install "re"
+                install "warnings"
+            }
+        }
+
         sourceSets {
             main {
                 python {
