@@ -144,7 +144,7 @@ def get_spacing():
   spacingX = spacing(0)
   spacingY = spacing(1)
 
-  # smallest x-serapation (between two adjacent dots in a letter)
+  # smallest x-seperation (between two adjacent dots in a letter)
   m = min(spacingX)
 
   c = 0
@@ -229,7 +229,7 @@ def display_contours(figsize = (15,30), lines = False):
   plt.show()
 
 def get_letters(showID = False):
-
+  minYD = 0
   Bxs = list(boundingBoxes)
   Bxs.append((100000, 0))
 
