@@ -16,18 +16,14 @@ android {
 
         python{
             pip{
-                instll "four_point_transform"
-                install "Counter"
-                install "matplotlib.pyplot"
-                install "contours"
-                install "skimage"
+                install "matplotlib"
+                install "scikit-image"
                 install "numpy"
-                istall "imutils"
-                install "cv2"
-                install "re"
-                install "warnings"
+                install "imutils"
+                install "opencv-contrib-python"
             }
         }
+        
 
         sourceSets {
             main {
