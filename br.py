@@ -311,7 +311,7 @@ def translate(letters):
   letters = np.array([np.array(l) for l in letters])
 
   ans  = ''
-
+  printFig()
   for r in range(0, len(letters), 3):
     for c in range(0, len(letters[0]), 2):
       f = letters[r:r+3,c:c+2].flatten()
@@ -372,7 +372,7 @@ def printFig():      #shows the image processing steps
 
 # -----------------------MAIN------------------------- #
 
-image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter = 0, width = 1500)
+image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter = 0, width = 1500)   #blur to 5 iter for small dots
 
 diam = get_diameter()
 dotCtrs = get_circles()
