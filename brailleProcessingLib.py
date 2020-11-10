@@ -1,5 +1,5 @@
-#from imutils.perspective import four_point_transform as FPT
-#from imutils import contours
+from imutils.perspective import four_point_transform as FPT
+from imutils import contours
 from collections import Counter        #counter
 from skimage import io                 #library to read images
 from textwrap import wrap              #wraps translated text
@@ -8,6 +8,9 @@ import numpy as np                     #used to process image to arrays
 import imutils                         #basic image processing
 import cv2                             #advanced for image processing
 import re                              #regex
+
+import warnings
+warnings.filterwarnings("ignore")
 
 FILEPATH = 'test.jpg'    #Works (iter = 0, width = 1500)
 
@@ -112,6 +115,7 @@ def draw_contours(questionCtrs):
       i += 1
 
 def get_spacing():
+   
    def spacing(x):
       space = []
       coor = [b[x] for b in boundingBoxes]

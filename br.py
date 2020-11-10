@@ -11,8 +11,12 @@ import re
 import warnings
 warnings.filterwarnings("ignore")
 
-def get_image(url, iter = 2, width = None):
-  image = io.imread(url)
+FILEPATH = 'test.jpg'    # works (iter = 0, width = 1500)
+
+# -----------------------FUNCTIONS------------------------- #
+
+def get_image(FILEPATH, iter = 2, width = None):
+  image = io.imread(FILEPATH)
   if width:
     image = imutils.resize(image, width)
   ans = image.copy()
@@ -333,20 +337,42 @@ def translate(letters):
   
   return ans
 
-# url = 'https://i.imgur.com/NwLqmz2.jpg'    # works
-# url = 'https://i.imgur.com/4nC067a.jpg'    # works
-# url = 'https://i.imgur.com/osNCAx3.jpg'
-#url = 'https://i.imgur.com/maU4r0t.jpg'    # works
-# url = 'https://i.imgur.com/OdyYxp1.jpg'    # not works :< (because letters aren't aligned vertically)
-# url = 'https://i.imgur.com/ttq5PzE.jpg'    # works
-# url = 'https://i.imgur.com/EjBz4nI.jpg'    # works (iter = 0, width = 1500)
-# url = 'https://i.imgur.com/4ggIni9.jpg'    # not works :<
-# url = 'https://i.imgur.com/UBqs60s.jpg'    # works
-# url = 'https://i.imgur.com/ihU7tFt.jpg'    # works (iter = 0, width = 1500)
-url = 'https://i.imgur.com/nFT74Mv.jpg'    # works (iter = 0, width = 1500)
+def printFig():      #shows the image processing steps
+   fig, axarr = plt.subplots(3, 2) 
+   fig.suptitle('Image Processing')
+   axarr[0,0].imshow(image)
+   axarr[0,0].set_title("0")
+   axarr[0,0].axis('off')
 
-image, ctrs, paper, gray, edged, thresh = get_image(url, iter = 0, width = 1500)
+   axarr[0,1].imshow(image)
+   axarr[0,1].set_title("1")
+   axarr[0,1].axis('off')
 
+   axarr[1,0].imshow(paper)
+   axarr[1,0].set_title("2")
+   axarr[1,0].axis('off')
+
+   axarr[1,1].imshow(gray)
+   axarr[1,1].set_title("3")
+   axarr[1,1].axis('off')
+
+   axarr[2,0].imshow(edged)
+   axarr[2,0].set_title("4")
+   axarr[2,0].axis('off')
+
+   axarr[2,1].imshow(thresh)
+   axarr[2,1].set_title("5")
+   axarr[2,1].axis('off')
+   plt.show()
+
+   plt.title('Final Image')
+   plt.axis('off')
+   io.imshow(paper)    #final image
+   plt.show()
+
+# -----------------------MAIN------------------------- #
+
+image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter = 0, width = 1500)
 
 diam = get_diameter()
 dotCtrs = get_circles()
@@ -367,4 +393,5 @@ plt.show()
 for l in wrap(ans, width = 80):
   print(l)
 
+printFig()
 display_contours((25,30), True)
