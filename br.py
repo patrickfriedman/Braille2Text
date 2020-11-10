@@ -1,8 +1,8 @@
 from imutils.perspective import four_point_transform as FPT
 from collections import Counter
-import matplotlib.pyplot as plt
 from imutils import contours
 from skimage import io
+import matplotlib.pyplot as plt
 import numpy as np
 import imutils
 import cv2
@@ -16,70 +16,53 @@ FILEPATH = 'test.jpg'    # works (iter = 0, width = 1500)
 # -----------------------FUNCTIONS------------------------- #
 
 def get_image(FILEPATH, iter = 2, width = None):
-  image = io.imread(FILEPATH)
+  image = io.imread(FILEPATH)  #reads the url and opens the temporary image to user
+  
   if width:
-    image = imutils.resize(image, width)
-  ans = image.copy()
-  accumEdged = np.zeros(image.shape[:2], dtype="uint8")
-  # convert image to black and white
-  gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-  # blur to remove some of the noise
-  blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-  # get edges
-  edged = cv2.Canny(blurred, 75, 200)
+    image = imutils.resize(image, width)   #resizes the image per the restricted width
+  ans = image.copy()         #create a copy backup image
+
+#image procesesing
+  accumEdged = np.zeros(image.shape[:2], dtype="uint8")  
+  gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)     #convert image to black and white  
+  blurred = cv2.GaussianBlur(gray, (5, 5), 0)        #blur to remove some of the noise
+  edged = cv2.Canny(blurred, 75, 200)           #get edges(converts image to easy detectable dots)
   accumEdged = cv2.bitwise_or(accumEdged, edged)
-  # get contours
-  ctrs = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-  ctrs = imutils.grab_contours(ctrs)
+  ctrs = imutils.grab_contours(cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))  # get contours(increases accuracy)
   docCnt = None
 
-  # ensure that at least one contour was found
-  if len(ctrs) > 0:
-      # sort the contours according to their size in
-      # descending order
-      ctrs = sorted(ctrs, key=cv2.contourArea, reverse=True)
+  #ensure that at least one contour was found to know an image can be processed
+  if len(ctrs) > 0:       #sort the contours according to their size in descending order
+    ctrs = sorted(ctrs, key=cv2.contourArea, reverse=True)
 
-      # loop over the sorted contours
-      for c in ctrs:
-          # approximate the contour
-          peri = cv2.arcLength(c, True)
-          approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+    for c in ctrs:       #loop over the sorted contours
+      peri = cv2.arcLength(c, True) 
+      approx = cv2.approxPolyDP(c, 0.02 * peri, True)       #approximate the contour
 
-          # if our approximated contour has four points,
-          # then we can assume we have found the paper
-          if len(approx) == 4:
-              docCnt = approx
-              break
+      #if our approximated contour has four points, then we can assume we have found the image
+      if len(approx) == 4:
+        docCnt = approx
+        break
+  paper = image.copy()       #creates a copy of the processed image
 
-  paper = image.copy()
-  
-  # apply Otsu's thresholding method to binarize the image
+  #apply Otsu's thresholding method to binarize the image
   thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
   kernel = np.ones((5,5), np.uint8)
-  # erode and dilate to remove some of the unnecessary detail
-  thresh = cv2.erode(thresh, kernel, iterations = iter)
+  
+  #erode and dilate to remove some of the unnecessary detail
+  thresh = cv2.erode(thresh, kernel, iterations = iter)    
   thresh = cv2.dilate(thresh, kernel, iterations = iter)
 
-  # find contours in the thresholded image
-  ctrs = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-  ctrs = imutils.grab_contours(ctrs)
-  
-  return image, ctrs, paper, gray, edged, thresh
+  #find contours in the thresholded image
+  ctrs = imutils.grab_contours(cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
 
-# plot image without axes
-def display(img):
-  fig = plt.figure(figsize = (8,12))
-  plt.imshow(img)
-  plt.axis('off')
-  plt.show()
+  return image, ctrs, paper, gray, edged, thresh
 
 def sort_contours(ctrs):
   BB = [list(cv2.boundingRect(c)) for c in ctrs]
-  # choose tolerance for x, y coordinates of the bounding boxes to be binned together
-  tol = 0.7*diam
-  
-  # change x and y coordinates of bounding boxes to their corresponding bins
-  def sort(i):
+  tol = 0.7 * diam      #choose tolerance for x, y coordinates of the bounding boxes to be binned together
+
+  def sort(i):         #change x and y coordinates of bounding boxes to their corresponding bins
     S = sorted(BB, key = lambda x: x[i])
     s = [b[i] for b in S]
     m = s[0]
@@ -93,30 +76,26 @@ def sort_contours(ctrs):
             m = e
             break
     return sorted(set(s))
-    
-  # lists of of x and y coordinates
+  
+  #lists of of x and y coordinates
   xs = sort(0)
   ys = sort(1)
-          
+        
   (ctrs, BB) = zip(*sorted(zip(ctrs, BB), key = lambda b: b[1][1]*len(image) + b[1][0]))
   # return the list of sorted contours and bounding boxes
   return ctrs, BB, xs, ys
 
-def get_circles():
+def get_circles():         #shows the area of interest for the computer
   questionCtrs = []
   for c in ctrs:
     (x, y, w, h) = cv2.boundingRect(c)
     ar = w / float(h)
 
-    # in order to label the contour as a question, region
-    # should be sufficiently wide, sufficiently tall, and
-    # have an aspect ratio approximately equal to 1
-  #     if w >= 20 and h >= 20 and 0.9 <= ar <= 1.1:
-    if diam*0.8 <= w <= diam*1.2 and 0.8 <= ar <= 1.2:
+    if diam * 0.8 <= w <= diam * 1.2 and 0.8 <= ar <= 1.2:     #region should be sufficiently wide, tall, and have an aspect ratio approximately equal to 1
       questionCtrs.append(c)    
   return questionCtrs
 
-def get_diameter():
+def get_diameter():     #shows the area of interest for the computer
   boundingBoxes = [list(cv2.boundingRect(c)) for c in ctrs]
   c = Counter([i[2] for i in boundingBoxes])
   mode = c.most_common(1)[0][0]
@@ -126,13 +105,12 @@ def get_diameter():
     diam = c.most_common(2)[1][0]
   return diam
 
-
 def draw_contours(questionCtrs):
   color = (0, 255, 0)
   i = 0
   for q in range(len(questionCtrs)):
     cv2.drawContours(paper, questionCtrs[q], -1, color, 3)
-    cv2.putText(paper, str(i), (boundingBoxes[q][0] + boundingBoxes[q][2]//2, boundingBoxes[q][1] + boundingBoxes[q][3]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+    cv2.putText(paper, str(i), (boundingBoxes[q][0] + boundingBoxes[q][2]//2, boundingBoxes[q][1] + boundingBoxes[q][3]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     i += 1
 
 def get_spacing():
@@ -156,14 +134,6 @@ def get_spacing():
   d1 = spacingX[0]
   d2 = 0
   d3 = 0
-
-#   for x in range(len(spacingX)):
-#     if spacingX[x+1] > spacingX[x]*1.1:
-#       c += 1
-#       if d2 == 0: d2 = spacingX[x+1]
-#     if c == 2:
-#       d3 = spacingX[x+1]
-#       break
       
   for x in spacingX:
     if d2 == 0 and x > d1*1.3:
@@ -200,16 +170,12 @@ def get_spacing():
         linesV.append(xs[i-1] + diam + (d2 - diam)/2)
         linesV.append(xs[i-1] + d2 + diam + (d1 - diam)/2)
         linesV.append(xs[i-1] + d3 + diam + (d2 - diam)/2)
-#         if d2 + d3 < diff:
-#           linesV.append(xs[i-1] + 2*d3 - (d2 - diam)/2)
         prev = 0
       else:
         linesV.append(xs[i-1] + diam + (d1 - diam)/2)
         linesV.append(xs[i-1] + d1 + diam + (d2 - diam)/2)
         linesV.append(xs[i-1] + d1 + d2 + diam + (d1 - diam)/2)
         linesV.append(xs[i-1] + d1 + d3 + diam + (d2 - diam)/2)
-#         if d2 + d3 < diff:
-#           linesV.append(xs[i-1] + d1 + 2*d3 - (d2 - diam)/2)
         prev = 1
 
   linesV.append(max(xs) + diam*1.5)
@@ -218,9 +184,7 @@ def get_spacing():
     
   return linesV, d1, d2, d3, spacingX, spacingY
 
-
 def display_contours(figsize = (15,30), lines = False):
-
   fig = plt.figure(figsize = figsize)
   plt.rcParams['axes.grid'] = False
   plt.rcParams['axes.spines.left'] = False
@@ -311,7 +275,7 @@ def translate(letters):
   letters = np.array([np.array(l) for l in letters])
 
   ans  = ''
-  printFig()
+  #printFig()
   for r in range(0, len(letters), 3):
     for c in range(0, len(letters[0]), 2):
       f = letters[r:r+3,c:c+2].flatten()
@@ -386,10 +350,7 @@ letters = get_letters()
 ans = translate(letters)
 
 from textwrap import wrap
-  
-plt.axis('off')
-io.imshow(image)
-plt.show()
+
 for l in wrap(ans, width = 80):
   print(l)
 

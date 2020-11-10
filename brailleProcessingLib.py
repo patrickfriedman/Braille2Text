@@ -2,17 +2,15 @@ from imutils.perspective import four_point_transform as FPT
 from imutils import contours
 from collections import Counter        #counter
 from skimage import io                 #library to read images
-from textwrap import wrap              #wraps translated text
 import matplotlib.pyplot as plt        #library to show image to user
 import numpy as np                     #used to process image to arrays
 import imutils                         #basic image processing
 import cv2                             #advanced for image processing
 import re                              #regex
 
-import warnings
-warnings.filterwarnings("ignore")
-
-FILEPATH = 'test.jpg'    #Works (iter = 0, width = 1500)
+FILEPATH = 'test.jpg'
+#test for alphabet translation / iter = 0 (test.jpg)
+#test for gaussian blur on nemmeth example / iter >= 3 (test2.jpg)
 
 # -----------------------FUNCTIONS------------------------- #
 
@@ -70,13 +68,13 @@ def get_diameter():     #shows the area of interest for the computer
   return diam
 
 def get_circles():         #shows the area of interest for the computer
-  questionCtrs = []
-  for c in ctrs:
-   (x, y, w, h) = cv2.boundingRect(c)
-   ar = w / float(h)
+   questionCtrs = []
+   for c in ctrs:
+      (x, y, w, h) = cv2.boundingRect(c)
+      ar = w / float(h)
 
-   if diam * 0.8 <= w <= diam * 1.2 and 0.8 <= ar <= 1.2:     #region should be sufficiently wide, tall, and have an aspect ratio approximately equal to 1
-      questionCtrs.append(c)    
+      if diam * 0.8 <= w <= diam * 1.2 and 0.8 <= ar <= 1.2:     #region should be sufficiently wide, tall, and have an aspect ratio approximately equal to 1
+         questionCtrs.append(c)    
    return questionCtrs
 
 def sort_contours(ctrs):
@@ -102,7 +100,7 @@ def sort_contours(ctrs):
    xs = sort(0)
    ys = sort(1)
           
-   (ctrs, BB) = zip(*sorted(zip(ctrs, BB), key = lambda b: b[1][1]*len(image) + b[1][0]))
+   (ctrs, BB) = zip(*sorted(zip(ctrs, BB), key = lambda b: b[1][1] * len(image) + b[1][0]))
    # return the list of sorted contours and bounding boxes
    return ctrs, BB, xs, ys
 
@@ -111,148 +109,137 @@ def draw_contours(questionCtrs):
    i = 0
    for q in range(len(questionCtrs)):
       cv2.drawContours(paper, questionCtrs[q], -1, color, 3)
-      cv2.putText(paper, str(i), (boundingBoxes[q][0] + boundingBoxes[q][2]//2, boundingBoxes[q][1] + boundingBoxes[q][3]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+      cv2.putText(paper, str(i), (boundingBoxes[q][0] + boundingBoxes[q][2] // 2, boundingBoxes[q][1] + boundingBoxes[q][3] // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
       i += 1
 
 def get_spacing():
-   
-   def spacing(x):
-      space = []
-      coor = [b[x] for b in boundingBoxes]
-      for i in range(len(coor) - 1):
-         c = coor[i + 1] - coor[i]
-         if c > diam // 2: space.append(c)
-      return sorted(list(set(space)))
 
-   spacingX = spacing(0)
-   spacingY = spacing(1)
+  def spacing(x):
+    space = []
+    coor = [b[x] for b in boundingBoxes]
+    for i in range(len(coor) - 1):
+      c = coor[i + 1] - coor[i]
+      if c > diam // 2: space.append(c)
+    return sorted(list(set(space)))
 
-   #smallest x-seperation (between two adjacent dots in a letter)
-   m = min(spacingX)
-   c = 0
+  spacingX = spacing(0)
+  spacingY = spacing(1)
 
-   d1 = spacingX[0]
-   d2 = 0
-   d3 = 0
+  # smallest x-seperation (between two adjacent dots in a letter)
+  m = min(spacingX)
 
-   for x in spacingX:
-      if d2 == 0 and x > d1 * 1.3:
-         d2 = x
-      if d2 > 0 and x > d2 * 1.3:
-         d3 = x
-         break
+  c = 0
 
-   linesV = []
-   prev = 0    #outside
-
-   linesV.append(min(xs) - (d2 - diam) / 2)
-
-   for i in range(1, len(xs)):
-      diff = xs[i] - xs[i-1]
-      if i == 1 and d2 * 0.9 < diff:
-         linesV.append(min(xs) - d2 - diam / 2)
-         prev = 1
-      if d1 * 0.8 < diff < d1 * 1.2:
-         linesV.append(xs[i - 1] + diam + (d1 - diam)  /2)
-         prev = 1
-      elif d2 * 0.8 < diff < d2 * 1.1:
-         linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
-         prev = 0
-      elif d3 * 0.9 < diff < d3 * 1.1:
-         if prev == 1:
-            linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
-            linesV.append(xs[i - 1] + d2 + diam + (d1 - diam) / 2)
-         else:
-            linesV.append(xs[i - 1] + diam + (d1 - diam) / 2)
-            linesV.append(xs[i - 1] + d1 + diam + (d2 - diam) / 2)
-      elif d3 * 1.1 < diff:
-         if prev == 1:
-            linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
-            linesV.append(xs[i - 1] + d2 + diam + (d1 - diam) / 2)
-            linesV.append(xs[i - 1] + d3 + diam + (d2 - diam) / 2)
-            prev = 0
-      else:
-         linesV.append(xs[i - 1] + diam + (d1 - diam) / 2)
-         linesV.append(xs[i - 1] + d1 + diam + (d2 - diam) / 2)
-         linesV.append(xs[i - 1] + d1 + d2 + diam + (d1 - diam) / 2)
-         linesV.append(xs[i - 1] + d1 + d3 + diam + (d2 - diam) / 2)
-         prev = 1
-
-   linesV.append(max(xs) + diam * 1.5)
-   if len(linesV) % 2 == 0:
-      linesV.append(max(xs) + d2 + diam)
+  d1 = spacingX[0]
+  d2 = 0
+  d3 = 0
       
-   return linesV, d1, d2, d3, spacingX, spacingY
+  for x in spacingX:
+    if d2 == 0 and x > d1 * 1.3:
+      d2 = x
+    if d2 > 0 and x > d2 * 1.3:
+      d3 = x
+      break
+      
+  linesV = []
+  prev = 0 # outside
 
-def display_contours(figsize = (15,30), lines = False):
-   fig = plt.figure(figsize = figsize)
-   plt.rcParams['axes.grid'] = False
-   plt.rcParams['axes.spines.left'] = False
-   plt.axis('off')
-   plt.imshow(paper)
-   if lines:
-      for x in linesV:
-         plt.axvline(x)
+  linesV.append(min(xs) - (d2 - diam) / 2)
 
-   plt.show()
+  for i in range(1, len(xs)):
+    diff = xs[i] - xs[i - 1]
+    if i == 1 and d2 * 0.9 < diff:
+      linesV.append(min(xs) - d2 - diam / 2)
+      prev = 1
+    if d1 * 0.8 < diff < d1 * 1.2:
+      linesV.append(xs[i - 1] + diam + (d1 - diam) / 2)
+      prev = 1
+    elif d2 * 0.8 < diff < d2 * 1.1:
+      linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
+      prev = 0
+    elif d3 * 0.9 < diff < d3 * 1.1:
+      if prev == 1:
+        linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
+        linesV.append(xs[i - 1] + d2 + diam + (d1 - diam) / 2)
+      else:
+        linesV.append(xs[i - 1] + diam + (d1 - diam) / 2)
+        linesV.append(xs[i - 1] + d1 + diam + (d2 - diam) / 2)
+    elif d3 * 1.1 < diff:
+      if prev == 1:
+        linesV.append(xs[i - 1] + diam + (d2 - diam) / 2)
+        linesV.append(xs[i - 1] + d2 + diam + (d1 - diam) / 2)
+        linesV.append(xs[i - 1] + d3 + diam + (d2 - diam) / 2)
+        prev = 0
+      else:
+        linesV.append(xs[i - 1] + diam + (d1 - diam) / 2)
+        linesV.append(xs[i - 1] + d1 + diam + (d2 - diam) / 2)
+        linesV.append(xs[i - 1] + d1 + d2 + diam + (d1 - diam) / 2)
+        linesV.append(xs[i - 1] + d1 + d3 + diam + (d2 - diam) / 2)
+        prev = 1
+
+  linesV.append(max(xs) + diam * 1.5)
+  if len(linesV) % 2 == 0:
+    linesV.append(max(xs) + d2 + diam)
+    
+  return linesV, d1, d2, d3, spacingX, spacingY
 
 def get_letters(showID = False):
-   minYD = 0
-   Bxs = list(boundingBoxes)
-   Bxs.append((100000, 0))
+  minYD = 0
+  Bxs = list(boundingBoxes)
+  Bxs.append((100000, 0))
 
-   dots = [[]]
-   for y in sorted(list(set(spacingY))):
-      if y > 1.3 * diam:
-         minYD = y * 1.5
-         break
+  dots = [[]]
+  for y in sorted(list(set(spacingY))):
+    if y > 1.3 * diam:
+      minYD = y * 1.5
+      break
 
-   #get lines of dots
-   for b in range(len(Bxs) - 1):
-      if Bxs[b][0] < Bxs[b + 1][0]:
-         if showID: dots[-1].append((b, Bxs[b][0:2]))
-         else: dots[-1].append(Bxs[b][0])
+  # get lines of dots
+  for b in range(len(Bxs)-1):
+    if Bxs[b][0] < Bxs[b + 1][0]:
+        if showID: dots[-1].append((b, Bxs[b][0:2]))
+        else: dots[-1].append(Bxs[b][0])
+    else:
+      if abs(Bxs[b + 1][1] - Bxs[b][1]) < minYD:
+        if showID: dots[-1].append((b, Bxs[b][0:2]))
+        else: dots[-1].append(Bxs[b][0])
+        dots.append([])
       else:
-         if abs(Bxs[b+1][1] - Bxs[b][1]) < minYD:
-            if showID: dots[-1].append((b, Bxs[b][0:2]))
-            else: dots[-1].append(Bxs[b][0])
-            dots.append([])
-         else:
-            if showID: dots[-1].append((b, Bxs[b][0:2]))
-            else: dots[-1].append(Bxs[b][0])
-            dots.append([])
-            if len(dots) % 3 == 0 and not dots[-1]:
-               dots.append([])
+        if showID: dots[-1].append((b, Bxs[b][0:2]))
+        else: dots[-1].append(Bxs[b][0])
+        dots.append([])
+        if len(dots) % 3 == 0 and not dots[-1]:
+          dots.append([])
 
-   letters = []
-   count = 0
+  letters = []
+  count = 0
+  
+  for r in range(len(dots)):
+    if not dots[r]:
+      letters.append([0 for _ in range(len(linesV) - 1)])
+      continue
 
-   for r in range(len(dots)):
-      if not dots[r]:
-         letters.append([0 for _ in range(len(linesV) - 1)])
-         continue
-
-      else:
-         letters.append([])
-         c = 0
-         i = 0
-         while i < len(linesV)-1:
-            if c < len(dots[r]):
-               if linesV[i] < dots[r][c] < linesV[i + 1]:
-                  letters[-1].append(1)
-               c += 1
-            else:
-               letters[-1].append(0)
-         else:
+    else:
+      letters.append([])
+      c = 0
+      i = 0
+      while i < len(linesV)-1:
+        if c < len(dots[r]):
+          if linesV[i] < dots[r][c] < linesV[i+1]:
+            letters[-1].append(1)
+            c += 1
+          else:
             letters[-1].append(0)
-         i += 1
+        else:
+          letters[-1].append(0)
+        i += 1
 
-   for l in range(len(letters)):
-      if l % 3 == 0: print()
-      print(letters[l])
-   print()
-      
-   return letters
+  for l in range(len(letters)):
+   if l % 3 == 0: print()
+   print(letters[l])
+  print()
+    
+  return letters
 
 def translate(letters):
    alpha = {'a': '1',      'b': '13',     'c': '12',     'd': '124',    'e': '14',
@@ -265,13 +252,13 @@ def translate(letters):
             '#': '2456',   '^': '6',      ',': '3',      '.': '346',
             '\"': '356',   '^': '26',     ':': '34',     '\'': '5'}
 
-   nums = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8', 'i': '9', 'j': '0'}
+   nums = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8', 'i': '9', 'j': '0'}          #2x2 braille letters
 
    braille = {v: k for k, v in alpha.items()}
-
    letters = np.array([np.array(l) for l in letters])
-
    ans = ''
+
+   #printFig()              #test for gaussian blur (test2.jpg)
 
    for r in range(0, len(letters), 3):
       for c in range(0, len(letters[0]), 2):
@@ -296,56 +283,53 @@ def translate(letters):
 
    return ans
 
-def print():      #shows the image processing steps
+def printFig():      #shows the image processing steps
    fig, axarr = plt.subplots(3, 2) 
    fig.suptitle('Image Processing')
-   axarr[0,0].imshow(image)
-   axarr[0,0].set_title("0")
+   axarr[0,0].imshow(image)         #original image
+   axarr[0,0].set_title("Original Image")
    axarr[0,0].axis('off')
 
-   axarr[0,1].imshow(image)
-   axarr[0,1].set_title("1")
+   axarr[0,1].imshow(gray)          #greyscales image
+   axarr[0,1].set_title("Grayscale")
    axarr[0,1].axis('off')
 
-   axarr[1,0].imshow(paper)
-   axarr[1,0].set_title("2")
+   axarr[1,0].imshow(edged)         #checks for areas of interest
+   axarr[1,0].set_title("Edging")
    axarr[1,0].axis('off')
 
-   axarr[1,1].imshow(gray)
-   axarr[1,1].set_title("3")
+   axarr[1,1].set_title("Contours")        #shows the contours of the alignments
+   axarr[1,1].imshow(image)
+   for x in linesV:
+      axarr[1,1].axvline(x)
    axarr[1,1].axis('off')
 
-   axarr[2,0].imshow(edged)
-   axarr[2,0].set_title("4")
+   axarr[2,0].imshow(paper)         #counts the dots in an array
+   axarr[2,0].set_title("Sorting Array")
    axarr[2,0].axis('off')
 
-   axarr[2,1].imshow(thresh)
-   axarr[2,1].set_title("5")
+   axarr[2,1].imshow(thresh)        #adds blur to remove unnecessary noise
+   axarr[2,1].set_title("Gaussian Bluring")
    axarr[2,1].axis('off')
    plt.show()
 
+   io.imshow(thresh)                #final image
    plt.title('Final Image')
    plt.axis('off')
-   io.imshow(paper)    #final image
    plt.show()
 
 # -----------------------MAIN------------------------- #
 
-image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter = 0, width = 1500)     #process image
+image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter = 0, width = 1500)     #processes image
 
 diam = get_diameter()         #shows the area of interest for the computer
 dotCtrs = get_circles()
 
-questionCtrs, boundingBoxes, xs, ys = sort_contours(dotCtrs)      
+questionCtrs, boundingBoxes, xs, ys = sort_contours(dotCtrs)      #counts dot array
 draw_contours(questionCtrs)         #contours image
 
-linesV, d1, d2, d3, spacingX, spacingY = get_spacing()
+linesV, d1, d2, d3, spacingX, spacingY = get_spacing()      #gets spacing lines
+letters = get_letters()       #translates braille
 
-letters = get_letters()
-ans = translate(letters)
-
-for l in wrap(ans, width = 80):
-   print(l)
-
-print()
-display_contours((25,30), True)
+print(translate(letters))        #print the translated braille
+printFig()           #prints the image processing steps
