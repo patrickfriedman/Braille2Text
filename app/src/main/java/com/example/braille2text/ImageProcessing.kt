@@ -10,6 +10,9 @@ class ImageProcessing: Application() {
         initPython()
     }
 
+
+
+
     private fun initPython() {
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
