@@ -23,7 +23,6 @@ android {
                 install "opencv-contrib-python"
             }
         }
-        
 
         sourceSets {
             main {
@@ -33,8 +32,7 @@ android {
             }
         }
         python {
-            buildPython "/urs/local/bin/python3"
-            buildPython "python3"
+            buildPython "C:/Users/Koolk/AppData/Local/Programs/Python/Python38-32/python.exe"
         }
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -54,12 +52,12 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation project(path: ':openCVLibrary343')
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'androidx.core:core-ktx:1.5.0-alpha04'
+    implementation 'androidx.core:core-ktx:1.5.0-alpha05'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
