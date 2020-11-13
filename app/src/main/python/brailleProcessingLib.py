@@ -1,5 +1,3 @@
-from imutils.perspective import four_point_transform as FPT
-from imutils import contours
 from collections import Counter  # counter
 from skimage import io  # library to read images
 import matplotlib.pyplot as plt  # library to show image to user
@@ -8,30 +6,32 @@ import imutils  # basic image processing
 import cv2  # advanced for image processing
 import re  # regex
 
-FILEPATH = 'test.jpg'
 
-
+FILEPATH = "/storage/emulated/0/DCIM/Braille/test.jpg"
 # test for alphabet translation / iter = 0 (test.jpg)
 # test for gaussian blur on nemmeth example / iter >= 3 (test2.jpg)
 
+
 # -----------------------FUNCTIONS------------------------- #
+
+
+def run():
+    return translate(letters)
+
 
 def get_image(FILEPATH, iter=2, width=None):
     image = io.imread(FILEPATH)  # reads the url and opens the temporary image to user
 
     if width:
-        image = imutils.resize(image, width)  # resizes the image per the restricted width
-    ans = image.copy()  # create a copy backup image
+        image = imutils.resize(image, width)  # resized the image per the restricted width
 
-    # image procesesing
+    # image processing
     accumEdged = np.zeros(image.shape[:2], dtype="uint8")
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # convert image to black and white
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)  # blur to remove some of the noise
+    grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # convert image to black and white
+    blurred = cv2.GaussianBlur(grey, (5, 5), 0)  # blur to remove some of the noise
     edged = cv2.Canny(blurred, 75, 200)  # get edges(converts image to easy detectable dots)
-    accumEdged = cv2.bitwise_or(accumEdged, edged)
-    ctrs = imutils.grab_contours(cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
-                                                  cv2.CHAIN_APPROX_SIMPLE))  # get contours(increases accuracy)
-    docCnt = None
+    cv2.bitwise_or(accumEdged, edged)
+    ctrs = imutils.grab_contours(cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))  # get contours(increases accuracy)
 
     # ensure that at least one contour was found to know an image can be processed
     if len(ctrs) > 0:  # sort the contours according to their size in descending order
@@ -43,23 +43,22 @@ def get_image(FILEPATH, iter=2, width=None):
 
             # if our approximated contour has four points, then we can assume we have found the image
             if len(approx) == 4:
-                docCnt = approx
                 break
     paper = image.copy()  # creates a copy of the processed image
 
-    # apply Otsu's thresholding method to binarize the image
-    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    # apply Otsu's threshold method to binary the image
+    thresh = cv2.threshold(grey, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
     kernel = np.ones((5, 5), np.uint8)
 
     # erode and dilate to remove some of the unnecessary detail
     thresh = cv2.erode(thresh, kernel, iterations=iter)
     thresh = cv2.dilate(thresh, kernel, iterations=iter)
 
-    # find contours in the thresholded image
+    # find contours in the threshold's image
     ctrs = imutils.grab_contours(
         cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
 
-    return image, ctrs, paper, gray, edged, thresh
+    return image, ctrs, paper, grey, edged, thresh
 
 
 def get_diameter():  # shows the area of interest for the computer
@@ -135,10 +134,8 @@ def get_spacing():
     spacingX = spacing(0)
     spacingY = spacing(1)
 
-    # smallest x-seperation (between two adjacent dots in a letter)
-    m = min(spacingX)
-
-    c = 0
+    # smallest x-separation (between two adjacent dots in a letter)
+    min(spacingX)
 
     d1 = spacingX[0]
     d2 = 0
@@ -229,7 +226,6 @@ def get_letters(showID=False):
                     dots.append([])
 
     letters = []
-    count = 0
 
     for r in range(len(dots)):
         if not dots[r]:
@@ -251,9 +247,9 @@ def get_letters(showID=False):
                     letters[-1].append(0)
                 i += 1
 
-    for l in range(len(letters)):
-        if l % 3 == 0: print()
-        print(letters[l])
+    for x in range(len(letters)):
+        if x % 3 == 0: print()
+        print(letters[x])
     print()
 
     return letters
@@ -267,14 +263,13 @@ def translate(letters):
              'u': '156', 'v': '1356', 'w': '2346', 'x': '1256', 'y': '12456',
              'z': '1456',
              # special characters
-             '#': '2456', '^': '6', ',': '3', '.': '346',
+             '#': '2456', ',': '3', '.': '346',
              '\"': '356', '^': '26', ':': '34', '\'': '5'}
 
-    nums = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8',
-            'i': '9', 'j': '0'}  # 2x2 braille letters
+    nums = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8', 'i': '9', 'j': '0'}  # 2x2 braille letters
 
     braille = {v: k for k, v in alpha.items()}
-    letters = np.array([np.array(l) for l in letters])
+    letters = np.array([np.array(x) for x in letters])
     ans = ''
 
     # printFig()              #test for gaussian blur (test2.jpg)
@@ -306,14 +301,14 @@ def translate(letters):
 
 
 def printFig():  # shows the image processing steps
-    fig, axarr = plt.subplots(3, 2)
+    fig, axarr = plt.subplots(4, 2)
     fig.suptitle('Image Processing')
     axarr[0, 0].imshow(image)  # original image
     axarr[0, 0].set_title("Original Image")
     axarr[0, 0].axis('off')
 
-    axarr[0, 1].imshow(gray)  # greyscales image
-    axarr[0, 1].set_title("Grayscale")
+    axarr[0, 1].imshow(gray)  # greyscale image
+    axarr[0, 1].set_title("Greyscale")
     axarr[0, 1].axis('off')
 
     axarr[1, 0].imshow(edged)  # checks for areas of interest
@@ -331,17 +326,23 @@ def printFig():  # shows the image processing steps
     axarr[2, 0].axis('off')
 
     axarr[2, 1].imshow(thresh)  # adds blur to remove unnecessary noise
-    axarr[2, 1].set_title("Gaussian Bluring")
+    axarr[2, 1].set_title("Gaussian Blurring")
     axarr[2, 1].axis('off')
     plt.show()
 
-    io.imshow(thresh)  # final image
+    axarr[3, 0].imshow(image)  # for comparison
+    axarr[3, 0].set_title("Original Image")
+    axarr[3, 0].axis('off')
+    plt.show()
+
+    io.imshow(thresh)
     plt.title('Final Image')
     plt.axis('off')
     plt.show()
 
 
 # -----------------------MAIN------------------------- #
+
 
 image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter=0, width=1500)  # processes image
 
@@ -355,4 +356,4 @@ linesV, d1, d2, d3, spacingX, spacingY = get_spacing()  # gets spacing lines
 letters = get_letters()  # translates braille
 
 print(translate(letters))  # print the translated braille
-printFig()           #prints the image processing steps
+printFig()  # prints the image processing steps
