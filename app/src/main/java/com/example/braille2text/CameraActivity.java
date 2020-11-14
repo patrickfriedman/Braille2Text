@@ -212,6 +212,7 @@ public class CameraActivity extends AppCompatActivity {
                     try {
                         output = new FileOutputStream(file);
                         output.write(bytes);
+                        Log.e(TAG, "Picture is saved.");
                     } finally {
                         if (null != output) {
                             output.close();
