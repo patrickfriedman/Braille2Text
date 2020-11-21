@@ -32,7 +32,7 @@ android {
             }
         }
         python {
-            buildPython "C:/Users/Koolk/AppData/Local/Programs/Python/Python38-32/python.exe"
+            //buildPython "C:/Users/Koolk/AppData/Local/Programs/Python/Python38-32/python.exe"
         }
         ndk {
             abiFilters "armeabi-v7a", "x86"

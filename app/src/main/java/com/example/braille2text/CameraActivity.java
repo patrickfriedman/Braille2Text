@@ -177,7 +177,7 @@ public class CameraActivity extends AppCompatActivity {
 
             //creating file name
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String prepend = "BRAILLE_" + timestamp + ".jpg";
+            String prepend = "test3.jpg";
 
             //Creating folder for braille files
             File folder = new File(Environment.getExternalStorageDirectory()+"/DCIM/Braille");

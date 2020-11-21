@@ -12,8 +12,8 @@ class Translation : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_translation)
-        getBraille()
-        txtPythonShow.text = getTranslate()                      //this prints out the python function helloworld.py
+        getBraille()                                             //image processing through python
+        txtPythonShow.text = getTranslate()                      //this prints out the python function to translate braille
     }
 
     private fun getBraille()  {
