@@ -4,19 +4,22 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera2" />
 
-
     <application
-        android:name = ".ImageProcessing"
+        android:name=".ImageProcessing"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CameraActivity"></activity>
+
+        <activity android:name=".Translation" />
+        <activity android:name=".CameraActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

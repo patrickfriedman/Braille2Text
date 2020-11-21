@@ -7,23 +7,36 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/txtPythonShow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="212dp"
-        android:text="Main Page"
-        android:textColor="#F44336"
-        android:textSize="30sp" />
+        android:text="Braille2Text"
+        android:textColor="#59000000"
+        android:textSize="30sp"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp"
-        android:text="Open Camera activity" />
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="30dp"
+        android:text="Open Camera activity"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="47dp"
+        android:layout_marginBottom="30dp"
+        android:text="Translate!"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>
