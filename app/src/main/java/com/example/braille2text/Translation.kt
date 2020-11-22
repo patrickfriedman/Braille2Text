@@ -18,7 +18,7 @@ class Translation : AppCompatActivity() {
     }
 
     private fun getBraille()  {
-        val bmImg = BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Braille/test2.jpg")
+        val bmImg = BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Braille/test3.jpg")
         brailleImage.setImageBitmap(bmImg)
     }
 
