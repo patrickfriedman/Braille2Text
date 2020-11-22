@@ -3,28 +3,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    tools:context=".MainActivity">
+    android:orientation="horizontal">
 
     <TextureView
         android:id="@+id/texture"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="729dp"
         android:layout_above="@+id/btn_takepicture"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="-14dp" />
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="-90dp" />
 
     <Button
         android:id="@+id/btn_takepicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/take_picture" />
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/ic_baseline_radio_button_unchecked_24"
+        android:backgroundTint="#EEFFFFFF"
+        android:hapticFeedbackEnabled="true"
+        android:outlineAmbientShadowColor="#131313"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:tooltipText="Click here to translate."
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/History"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="3dp"
+        android:background="@drawable/ic_baseline_menu_24"
+        android:tooltipText="History" />
+
+    <Button
+        android:id="@+id/help"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="8dp"
+        android:tooltipText="Help"
+        android:background="@drawable/ic_baseline_live_help_24" />
 
 </RelativeLayout>

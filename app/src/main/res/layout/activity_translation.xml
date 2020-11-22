@@ -4,15 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:textAlignment="center"
     tools:context=".Translation">
 
     <TextView
         android:id="@+id/txtPythonShow"
-        android:layout_width="410dp"
-        android:layout_height="381dp"
+        android:layout_width="246dp"
+        android:layout_height="208dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
@@ -20,13 +22,15 @@
 
     <ImageView
         android:id="@+id/brailleImage"
-        android:layout_width="407dp"
-        android:layout_height="353dp"
+        android:layout_width="409dp"
+        android:layout_height="345dp"
+        android:contentDescription="Original Braille Image"
         app:layout_constraintBottom_toTopOf="@+id/txtPythonShow"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="Original Braille Image"
+        app:layout_constraintVertical_bias="0.003"
         tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

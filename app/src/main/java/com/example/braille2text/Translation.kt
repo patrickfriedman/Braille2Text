@@ -14,10 +14,11 @@ class Translation : AppCompatActivity() {
         setContentView(R.layout.activity_translation)
         getBraille()                                             //image processing through python
         txtPythonShow.text = getTranslate()                      //this prints out the python function to translate braille
+        deleteFile("test3.jpg")
     }
 
     private fun getBraille()  {
-        val bmImg = BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Braille/test.jpg")
+        val bmImg = BitmapFactory.decodeFile("/storage/emulated/0/DCIM/Braille/test2.jpg")
         brailleImage.setImageBitmap(bmImg)
     }
 
