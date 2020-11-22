@@ -6,8 +6,7 @@ import imutils  # basic image processing
 import cv2  # advanced for image processing
 import re  # regex
 
-
-FILEPATH = "/storage/emulated/0/DCIM/Braille/test.jpg"
+FILEPATH = "/storage/emulated/0/DCIM/Braille/test2.jpg"
 # test for alphabet translation / iter = 0 (test.jpg)
 # test for gaussian blur on nemmeth example / iter >= 3 (test2.jpg)
 
@@ -19,7 +18,7 @@ def run():
     return translate(letters)
 
 
-def get_image(FILEPATH, iter=2, width=None):
+def get_image(FILEPATH, iterator=2, width=None):
     image = io.imread(FILEPATH)  # reads the url and opens the temporary image to user
 
     if width:
@@ -31,7 +30,8 @@ def get_image(FILEPATH, iter=2, width=None):
     blurred = cv2.GaussianBlur(grey, (5, 5), 0)  # blur to remove some of the noise
     edged = cv2.Canny(blurred, 75, 200)  # get edges(converts image to easy detectable dots)
     cv2.bitwise_or(accumEdged, edged)
-    ctrs = imutils.grab_contours(cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))  # get contours(increases accuracy)
+    ctrs = imutils.grab_contours(cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL,
+                                                  cv2.CHAIN_APPROX_SIMPLE))  # get contours(increases accuracy)
 
     # ensure that at least one contour was found to know an image can be processed
     if len(ctrs) > 0:  # sort the contours according to their size in descending order
@@ -51,8 +51,8 @@ def get_image(FILEPATH, iter=2, width=None):
     kernel = np.ones((5, 5), np.uint8)
 
     # erode and dilate to remove some of the unnecessary detail
-    thresh = cv2.erode(thresh, kernel, iterations=iter)
-    thresh = cv2.dilate(thresh, kernel, iterations=iter)
+    thresh = cv2.erode(thresh, kernel, iterations=iterator)
+    thresh = cv2.dilate(thresh, kernel, iterations=iterator)
 
     # find contours in the threshold's image
     ctrs = imutils.grab_contours(
@@ -263,41 +263,42 @@ def translate(letters):
              'u': '156', 'v': '1356', 'w': '2346', 'x': '1256', 'y': '12456',
              'z': '1456',
              # special characters
-             '#': '2456', ',': '3', '.': '346',
-             '\"': '356', '^': '26', ':': '34', '\'': '5'}
+             '\'': '5'}
 
-    nums = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8', 'i': '9', 'j': '0'}  # 2x2 braille letters
+    nemmeth = {'0': '456', '1': '3', '2': '35', '3': '34', '4': '346',
+               '5': '36', '6': '345', '7': '3456', '8': '356', '9': '45',
+               # special characters
+               '#': '2456',         # fraction closing indicator
+               '?': '1246',         # fraction open indicator
+               ',': '6',            # complex fraction modifier
+               '(': '13456',        # open parenthesis
+               ')': '23456',        # close parenthesis
+               # mathematical expressions
+               '+': '256',          # mathematical plus
+               '-': '56',           # mathematical subtraction
+               }
+    alpha.update(nemmeth)  # adds nemmeth library to alphabet library
 
     braille = {v: k for k, v in alpha.items()}
     letters = np.array([np.array(x) for x in letters])
     ans = ''
-
-    # printFig()              #test for gaussian blur (test2.jpg)
 
     for r in range(0, len(letters), 3):
         for c in range(0, len(letters[0]), 2):
             f = letters[r:r + 3, c:c + 2].flatten()
             f = ''.join([str(i + 1) for i, d in enumerate(f) if d == 1])
             if f == '6': f = '26'
-            if not f:
-                if ans[-1] != ' ': ans += ' '
             elif f in braille.keys():
                 ans += braille[f]
             else:
-                ans += '?'
-        if ans[-1] != ' ': ans += ' '
-
-    def replace_nums(m):  # replace numbers
-        return nums.get(m.group('key'), m.group(0))
-
-    ans = re.sub('#(?P<key>[a-zA-Z])', replace_nums, ans)
-
-    def capitalize(m):  # capitalize
-        return m.group(0).upper()[1]
-
-    ans = re.sub('\^(?P<key>[a-zA-Z])', capitalize, ans)
+                ans += ''
+        if ans[-1] != ' ': ans += '\n'
 
     return ans
+
+
+def nem2eng(ans):               # string parsing here to translate nemmeth to math notation
+    return print(ans)
 
 
 def printFig():  # shows the image processing steps
@@ -344,7 +345,7 @@ def printFig():  # shows the image processing steps
 # -----------------------MAIN------------------------- #
 
 
-image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iter=0, width=1500)  # processes image
+image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iterator=5, width=1500)  # processes image
 
 diam = get_diameter()  # shows the area of interest for the computer
 dotCtrs = get_circles()
@@ -355,5 +356,5 @@ draw_contours(questionCtrs)  # contours image
 linesV, d1, d2, d3, spacingX, spacingY = get_spacing()  # gets spacing lines
 letters = get_letters()  # translates braille
 
-print(translate(letters))  # print the translated braille
+nem2eng(translate(letters))  # print the translated braille
 printFig()  # prints the image processing steps

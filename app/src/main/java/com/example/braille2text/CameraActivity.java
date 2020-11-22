@@ -2,6 +2,7 @@ package com.example.braille2text;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -74,6 +75,7 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        deleteFile("test3.jpg");
         setContentView(R.layout.activity_camera);
         textureView = (TextureView) findViewById(R.id.texture);
         assert textureView != null;
@@ -105,6 +107,18 @@ public class CameraActivity extends AppCompatActivity {
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         }
     };
+    public void openTranslationActivity() {
+        Intent i = new Intent(getApplicationContext(), Translation.class);
+        startActivity(i);
+    }
+    public void openHistoryActivity() {     //history tab
+        //Intent i = new Intent(getApplicationContext(), History.class);
+        //startActivity(i);
+    }
+    public void openHelpActivity() {     //help popup
+        //Intent i = new Intent(getApplicationContext(), Help.class);
+        //startActivity(i);
+    }
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
@@ -217,6 +231,7 @@ public class CameraActivity extends AppCompatActivity {
                         if (null != output) {
                             output.close();
                         }
+                        openTranslationActivity();
                     }
                 }
             };
@@ -339,7 +354,6 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
-        closeCamera();
         stopBackgroundThread();
         super.onPause();
     }
