@@ -287,7 +287,8 @@ def translate(letters):
         for c in range(0, len(letters[0]), 2):
             f = letters[r:r + 3, c:c + 2].flatten()
             f = ''.join([str(i + 1) for i, d in enumerate(f) if d == 1])
-            if f == '6': f = '26'
+            if f == '6':
+                pass
             elif f in braille.keys():
                 ans += braille[f]
             else:
