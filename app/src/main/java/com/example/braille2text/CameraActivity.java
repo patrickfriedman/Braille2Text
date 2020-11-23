@@ -4,8 +4,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -72,6 +77,7 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         deleteFile("test3.jpg");
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setContentView(R.layout.activity_camera);
         textureView = (TextureView) findViewById(R.id.texture);
         assert textureView != null;
@@ -197,8 +203,10 @@ public class CameraActivity extends AppCompatActivity {
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             // Orientation
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            final int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(
+                    CaptureRequest.JPEG_ORIENTATION,
+                    ORIENTATIONS.get(rotation));
 
             // creating file name
             @SuppressLint("SimpleDateFormat") String timestamp = new SimpleDateFormat("yyyyMMdd_Hhmmss").format(new Date());
@@ -227,6 +235,22 @@ public class CameraActivity extends AppCompatActivity {
                     try (OutputStream output = new FileOutputStream(file)) {
                         output.write(bytes);
                         Log.e(TAG, "Picture is saved.");
+
+                        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+                            Log.e(TAG, "Camera is in Portrait Mode.");
+                            Bitmap bm = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory()+"/DCIM/Braille/test3.jpg");
+
+                            Matrix matrix = new Matrix();
+                            matrix.postRotate(90);
+                            Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+
+                            FileOutputStream fos = new FileOutputStream(file);
+                            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                            fos.close();
+                        }
+                        else{
+                            Log.e(TAG, "Camera is in Landscape Mode.");
+                        }
                     } finally {
                         openTranslationActivity();
                     }
