@@ -6,7 +6,7 @@ import imutils  # basic image processing
 import cv2  # advanced for image processing
 import re  # regex
 
-FILEPATH = "/storage/emulated/0/DCIM/Braille/test2.jpg"
+FILEPATH = "/storage/emulated/0/DCIM/Braille/test3.jpg"
 # test for alphabet translation / iter = 0 (test.jpg)
 # test for gaussian blur on nemmeth example / iter >= 3 (test2.jpg)
 
@@ -268,11 +268,12 @@ def translate(letters):
     nemmeth = {'0': '456', '1': '3', '2': '35', '3': '34', '4': '346',
                '5': '36', '6': '345', '7': '3456', '8': '356', '9': '45',
                # special characters
-               '#': '2456',         # fraction closing indicator
+               '#': '2456',         # fraction closing indicator or numeric indicator
                '?': '1246',         # fraction open indicator
                ',': '6',            # complex fraction modifier
                '(': '13456',        # open parenthesis
                ')': '23456',        # close parenthesis
+               '/': '25',           # fraction line
                # mathematical expressions
                '+': '256',          # mathematical plus
                '-': '56',           # mathematical subtraction
@@ -295,10 +296,22 @@ def translate(letters):
                 ans += ''
         if ans[-1] != ' ': ans += '\n'
 
-    return ans
+    newAns=''   #will hold the parsed string
+    fract = 0   #1 indicates opening fraction indicator is in use.
+    for x in ans:
+        if x == '#' and fract ==0:  #if found, while not being followed by an opening fraction indicator, skip it cause its a numberic indicator
+            continue
+        newAns+=x
+
+
+
+    #return ans
+    return newAns
 
 
 def nem2eng(ans):               # string parsing here to translate nemmeth to math notation
+
+
     return print(ans)
 
 
@@ -346,7 +359,7 @@ def printFig():  # shows the image processing steps
 # -----------------------MAIN------------------------- #
 
 
-image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iterator=5, width=1500)  # processes image
+image, ctrs, paper, gray, edged, thresh = get_image(FILEPATH, iterator=10, width=1500)  # processes image
 
 diam = get_diameter()  # shows the area of interest for the computer
 dotCtrs = get_circles()
@@ -358,4 +371,4 @@ linesV, d1, d2, d3, spacingX, spacingY = get_spacing()  # gets spacing lines
 letters = get_letters()  # translates braille
 
 nem2eng(translate(letters))  # print the translated braille
-printFig()  # prints the image processing steps
+#printFig()  # prints the image processing steps
