@@ -1,5 +1,6 @@
 package com.example.braille2text
 
+import android.content.Context
 import android.os.Bundle
 import android.util.DisplayMetrics
 import androidx.appcompat.app.AppCompatActivity
@@ -25,5 +26,10 @@ class History : AppCompatActivity() {
         val python = Python.getInstance()
         val pythonFile = python.getModule("brailleProcessingLib")
         return pythonFile.callAttr("run").toString()
+    }
+
+    public fun loadData(){
+        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        val savedString = sharedPreferences.getString("STRING_KEY",null)
     }
 }

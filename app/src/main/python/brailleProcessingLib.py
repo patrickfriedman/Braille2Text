@@ -5,6 +5,7 @@ import numpy as np  # used to process image to arrays
 import imutils  # basic image processing
 import cv2  # advanced for image processing
 import re  # regex
+import sys #system
 
 FILEPATH = "/storage/emulated/0/DCIM/Braille/test3.jpg"
 # test for alphabet translation / iter = 0 (test.jpg)
@@ -309,51 +310,8 @@ def translate(letters):
     return newAns
 
 
-def nem2eng(ans):               # string parsing here to translate nemmeth to math notation
 
 
-    return print(ans)
-
-
-def printFig():  # shows the image processing steps
-    fig, axarr = plt.subplots(4, 2)
-    fig.suptitle('Image Processing')
-    axarr[0, 0].imshow(image)  # original image
-    axarr[0, 0].set_title("Original Image")
-    axarr[0, 0].axis('off')
-
-    axarr[0, 1].imshow(gray)  # greyscale image
-    axarr[0, 1].set_title("Greyscale")
-    axarr[0, 1].axis('off')
-
-    axarr[1, 0].imshow(edged)  # checks for areas of interest
-    axarr[1, 0].set_title("Edging")
-    axarr[1, 0].axis('off')
-
-    axarr[1, 1].set_title("Contours")  # shows the contours of the alignments
-    axarr[1, 1].imshow(image)
-    for x in linesV:
-        axarr[1, 1].axvline(x)
-    axarr[1, 1].axis('off')
-
-    axarr[2, 0].imshow(paper)  # counts the dots in an array
-    axarr[2, 0].set_title("Sorting Array")
-    axarr[2, 0].axis('off')
-
-    axarr[2, 1].imshow(thresh)  # adds blur to remove unnecessary noise
-    axarr[2, 1].set_title("Gaussian Blurring")
-    axarr[2, 1].axis('off')
-    plt.show()
-
-    axarr[3, 0].imshow(image)  # for comparison
-    axarr[3, 0].set_title("Original Image")
-    axarr[3, 0].axis('off')
-    plt.show()
-
-    io.imshow(thresh)
-    plt.title('Final Image')
-    plt.axis('off')
-    plt.show()
 
 
 # -----------------------MAIN------------------------- #
@@ -369,6 +327,4 @@ draw_contours(questionCtrs)  # contours image
 
 linesV, d1, d2, d3, spacingX, spacingY = get_spacing()  # gets spacing lines
 letters = get_letters()  # translates braille
-
-nem2eng(translate(letters))  # print the translated braille
-#printFig()  # prints the image processing steps
+translate(letters)  # print the translated braille
