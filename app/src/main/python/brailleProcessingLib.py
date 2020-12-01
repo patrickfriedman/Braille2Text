@@ -327,4 +327,5 @@ draw_contours(questionCtrs)  # contours image
 
 linesV, d1, d2, d3, spacingX, spacingY = get_spacing()  # gets spacing lines
 letters = get_letters()  # translates braille
-translate(letters)  # print the translated braille
+#translate(letters)  # print the translated braille
+

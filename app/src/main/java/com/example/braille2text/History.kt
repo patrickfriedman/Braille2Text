@@ -3,9 +3,10 @@ package com.example.braille2text
 import android.content.Context
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.chaquo.python.Python
 import kotlinx.android.synthetic.main.activity_history.*
+import java.io.*
 
 class History : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,17 +20,33 @@ class History : AppCompatActivity() {
         val height = dm.heightPixels
 
         window.setLayout((width * .9).toInt(), (height * .8).toInt())
-        textView.text = getTranslate()                      //this prints out the python function to translate braille
+        var history = readFromFile(this)
+        textView.text = history                //this prints out the python function to translate braille
+
     }
 
-    private fun getTranslate(): String {
-        val python = Python.getInstance()
-        val pythonFile = python.getModule("brailleProcessingLib")
-        return pythonFile.callAttr("run").toString()
+    private fun readFromFile(context: Context): String? {
+        var ret = ""
+        try {
+            val inputStream: InputStream? = context.openFileInput("history.txt")
+            if (inputStream != null) {
+                val inputStreamReader = InputStreamReader(inputStream)
+                val bufferedReader = BufferedReader(inputStreamReader)
+                var receiveString: String? = ""
+                val stringBuilder = StringBuilder()
+                while (bufferedReader.readLine().also { receiveString = it } != null) {
+                    stringBuilder.append("\n").append(receiveString)
+                }
+                inputStream.close()
+                ret = stringBuilder.toString()
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e("login activity", "File not found: " + e.toString())
+        } catch (e: IOException) {
+            Log.e("login activity", "Can not read file: " + e.toString())
+        }
+        return ret
     }
 
-    public fun loadData(){
-        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val savedString = sharedPreferences.getString("STRING_KEY",null)
-    }
+
 }

@@ -3,22 +3,25 @@ package com.example.braille2text
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.chaquo.python.Python
 import kotlinx.android.synthetic.main.activity_translation.*
+import java.io.IOException
+import java.io.OutputStreamWriter
 
 
 class Translation : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_translation)
-        getBraille()                                             //image processing through python
-        txtPythonShow.text = getTranslate()                      //this prints out the python function to translate braille
-        Toast.makeText(this,"python completed", Toast.LENGTH_SHORT).show()
-       // val trans = getTranslate()
+
+        getBraille()
+        val trans = getTranslate()//image processing through python
+        writeToFile(trans,this)
+        txtPythonShow.text = trans               //this prints out the python function to translate braille
+
         //saveData(trans)
     }
 
@@ -33,19 +36,16 @@ class Translation : AppCompatActivity() {
         return pythonFile.callAttr("run").toString()
     }
 
-    public fun saveData(trans: String){
-
-        val insertedText = trans    //holds translated value
-
-        val sharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)   //create shared preferences. Private to only this application
-        val editor = sharedPreferences.edit()
-        editor.apply{
-            putString("STRING_KEY",insertedText)
-        }.apply()
-
-        Toast.makeText(this,"Data Saved", Toast.LENGTH_SHORT).show()
-
+    private fun writeToFile(data: String, context: Context) {
+        try {
+            val outputStreamWriter = OutputStreamWriter(context.openFileOutput("history.txt",MODE_APPEND))
+            outputStreamWriter.write(data)
+            outputStreamWriter.close()
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
     }
 
-
 }
+
+
