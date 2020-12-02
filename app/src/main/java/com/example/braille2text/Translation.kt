@@ -22,7 +22,6 @@ class Translation : AppCompatActivity() {
         writeToFile(trans,this)
         txtPythonShow.text = trans               //this prints out the python function to translate braille
 
-        //saveData(trans)
     }
 
     private fun getBraille()  {
