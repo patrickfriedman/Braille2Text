@@ -7,4 +7,4 @@ OpenCV version 3.4.3
 
 Final Demo: https://drive.google.com/file/d/1u1qE7yL_UWTBiKaDkxbtqXQ7vD0hIVRN/view
 
-Pre-Release: https://drive.google.com/file/d/1Y3Ayjl9koIHKgBz0eUgamxg8B8EqAgkM/view
+Pre-Release: https://drive.google.com/file/d/1u05j-mMiUCnsMZdyvyslLX8pTWZRVHyw/view
